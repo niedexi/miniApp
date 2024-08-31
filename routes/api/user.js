@@ -5,6 +5,11 @@ const router = express.Router();
 const User = require("../../models/User");
 
 
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+});
+
+
 //LOGIN
 router.post('/login', async (req, res) => {
   const { code } = req.body;
