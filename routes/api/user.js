@@ -64,4 +64,49 @@ router.post('/register', async (req, res) => {
 });
 
 
+//GET CURRENT USER PROFILE
+router.post('/get', async (req, res) => {
+  const { openID } = req.body;
+
+  try {
+    const user = await User.findOne({ openID });
+    if (user) {
+      res.json({
+        name: user.name,
+        phone: user.phone,
+        province: user.province,
+        region: user.region
+      });
+    } else {
+      res.status(404).json({ message: '用户未找到' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: '服务器错误', error });
+  }
+});
+
+
+//EDIT USER PROFILE
+router.post('/edit', async (req, res) => {
+  const { openID, name, phone, province, region } = req.body;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { openID },
+      { name, phone, province, region },
+      { new: true }
+    );
+
+    if (user) {
+      res.json({ message: '用户信息更新成功' });
+    } else {
+      res.status(404).json({ message: '用户未找到' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: '服务器错误', error });
+  }
+});
+
+
+
 module.exports = router;
