@@ -7,20 +7,20 @@ const OrderSchema = new Schema({
     ref: "user"
   },
   name: {
-    type: Schema.Types.String,
-    ref: "user"
+    type: String,
+    required: true
   },
   phone: {
-    type: Schema.Types.Number,
-    ref: "user"
+    type: Number,
+    required: true
   },
   province: {
-    type: Schema.Types.String,
-    ref: "user"
+    type: String,
+    required: true
   },
   region: {
-    type: Schema.Types.String,
-    ref: "user"
+    type: String,
+    required: true
   },
   product: {
     type: String,
