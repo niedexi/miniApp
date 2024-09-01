@@ -10,6 +10,18 @@ router.get('/', (req, res) => {
 });
 
 
+// GET /api-user/all
+// GET ALL USERS
+router.get('/all', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: '服务器错误', error });
+  }
+});
+
+
 //LOGIN
 router.post('/login', async (req, res) => {
   const { code } = req.body;
