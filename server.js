@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 
 const user = require("./routes/api/user");
 const order = require("./routes/api/order");
+const product = require("./routes/api/product");
+
 
 const app = express();
 
@@ -22,12 +24,14 @@ mongoose
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('this is the server file')
 });
 
 // Routes
 app.use("/user", user);
 app.use("/order", order);
+app.use("/product", product);
+
 
 const port = process.env.PORT || 5050;
 app.listen(port, () => console.log(`Server running on port ${port}`));

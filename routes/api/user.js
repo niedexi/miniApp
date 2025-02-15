@@ -6,11 +6,11 @@ const User = require("../../models/User");
 
 
 router.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('this is user/')
 });
 
 
-// GET /api-user/all
+// GET /user/all
 // GET ALL USERS
 router.get('/all', async (req, res) => {
   try {

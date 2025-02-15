@@ -6,37 +6,18 @@ const OrderSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "user"
   },
-  name: {
-    type: String,
-    required: true
-  },
-  phone: {
-    type: Number,
-    required: true
-  },
-  province: {
-    type: String,
-    required: true
-  },
-  region: {
-    type: String,
-    required: true
-  },
-  product: {
-    type: String,
-    required: true
-  },
-  quantity: {
-    type: Number,
-    required: true
-  },
-  memo: {
-    type: String,
-  },
   time: {
     type: Date,
     default: Date.now
-  }
+  },
+  username: String,
+  province: String,
+  region: String,
+  product: String,
+  type: String,
+  quantity: Number,
+  memo: String,
+  
 });
 
 let Order = mongoose.model("order", OrderSchema);
