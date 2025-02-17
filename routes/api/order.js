@@ -4,6 +4,9 @@ const Order = require('../../models/Order');
 const User = require("../../models/User");
 
 
+
+// ###### ADMIN RELATED ######
+
 // GET /order/all
 // get all orders
 router.get('/all', async (req, res) => {
@@ -16,9 +19,9 @@ router.get('/all', async (req, res) => {
 });
 
 
-// GET /order/thisweek
+// GET /order/thisWeek
 // GET ALL ORDERS CREATED THIS WEEK
-router.get('/thisweek', async (req, res) => {
+router.get('/thisWeek', async (req, res) => {
     try {
         // Get the current date
         const now = new Date();
@@ -62,6 +65,27 @@ router.get('/:id', async (req, res) => {
 });
 
 
+// GET /order/user/:id
+// GET ALL ORDERS BY USER ID
+router.post('/user/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const orders = await Order.find({ user: userId }).sort({ time: -1 });
+
+        if (orders.length === 0) {
+            return res.status(404).json({ message: '用户未创建订单' });
+          }
+
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ message: '服务器错误', error });
+    }
+});
+
+
+// ##### USER RELATED #####
+
 // GET /order/user
 // GET ALL ORDERS OF CURRENT USER
 router.post('/user', async (req, res) => {
@@ -81,17 +105,60 @@ router.post('/user', async (req, res) => {
 });
 
 
-// GET /order/user/:id
-// GET ALL ORDERS BY USER ID
-router.post('/user/:id', async (req, res) => {
+// GET /order/user/thisWeek
+// GET ALL THIS WEEK ORDERS OF CURRENT USER
+router.post('/user/thisWeek', async (req, res) => {
+    const { openID } = req.body;
+
     try {
-        const userId = req.params.id;
+        const user = await User.findOne({ openID });
+        if (!user) {
+            return res.status(404).json({ message: '用户未找到' });
+        }
 
-        const orders = await Order.find({ user: userId }).sort({ time: -1 });
+        // Calculate the start of the current week (Monday at 00:00:00)
+        const now = new Date();
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1)));
+        startOfWeek.setHours(0, 0, 0, 0);
 
-        if (orders.length === 0) {
-            return res.status(404).json({ message: '用户未创建订单' });
-          }
+        // Find orders created this week
+        const orders = await Order.find({
+            user: user._id,
+            time: { $gte: startOfWeek }
+        }).sort({ time: -1 });
+
+        res.status(200).json(orders);
+    } catch (error) {
+        res.status(500).json({ message: '服务器错误', error });
+    }
+});
+
+
+// GET /order/user/lastWeek
+// GET ALL LAST WEEK ORDERS OF CURRENT USER
+router.post('/user/lastWeek', async (req, res) => {
+    const { openID } = req.body;
+
+    try {
+        const user = await User.findOne({ openID });
+        if (!user) {
+            return res.status(404).json({ message: '用户未找到' });
+        }
+
+        // Calculate the start and end of last week
+        const now = new Date();
+        const startOfLastWeek = new Date(now.setDate(now.getDate() - now.getDay() - 6)); // Start of last week (Monday)
+        startOfLastWeek.setHours(0, 0, 0, 0); // Set time to 00:00:00
+
+        const endOfLastWeek = new Date(startOfLastWeek);
+        endOfLastWeek.setDate(startOfLastWeek.getDate() + 7); // End of last week (Sunday)
+        endOfLastWeek.setHours(23, 59, 59, 999); // Set time to 23:59:59.999
+
+        // Find orders created last week
+        const orders = await Order.find({
+            user: user._id,
+            time: { $gte: startOfLastWeek, $lt: endOfLastWeek }
+        }).sort({ time: -1 });
 
         res.status(200).json(orders);
     } catch (error) {
